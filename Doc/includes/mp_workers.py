@@ -1,7 +1,7 @@
 import time
-import random
 
 from multiprocessing import Process, Queue, current_process, freeze_support
+import secrets
 
 #
 # Function run by worker processes
@@ -26,11 +26,11 @@ def calculate(func, args):
 #
 
 def mul(a, b):
-    time.sleep(0.5*random.random())
+    time.sleep(0.5*secrets.SystemRandom().random())
     return a * b
 
 def plus(a, b):
-    time.sleep(0.5*random.random())
+    time.sleep(0.5*secrets.SystemRandom().random())
     return a + b
 
 #

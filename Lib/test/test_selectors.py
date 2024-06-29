@@ -1,6 +1,5 @@
 import errno
 import os
-import random
 import selectors
 import signal
 import socket
@@ -12,6 +11,8 @@ import unittest
 import unittest.mock
 import tempfile
 from time import monotonic as time
+import secrets
+
 try:
     import resource
 except ImportError:
@@ -363,7 +364,7 @@ class BaseSelectorTestCase:
             ready_writers = find_ready_matching(ready, selectors.EVENT_WRITE)
             if not ready_writers:
                 self.fail("no sockets ready for writing")
-            wr = random.choice(ready_writers)
+            wr = secrets.choice(ready_writers)
             wr.send(MSG)
 
             for i in range(10):

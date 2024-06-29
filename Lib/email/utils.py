@@ -3,6 +3,7 @@
 # Contact: email-sig@python.org
 
 """Miscellaneous utilities."""
+import secrets
 
 __all__ = [
     'collapse_rfc2231_value',
@@ -294,14 +295,11 @@ def make_msgid(idstring=None, domain=None):
     portion of the message id after the '@'.  It defaults to the locally
     defined hostname.
     """
-    # Lazy imports to speedup module import time
-    # (no other functions in email.utils need these modules)
-    import random
     import socket
 
     timeval = int(time.time()*100)
     pid = os.getpid()
-    randint = random.getrandbits(64)
+    randint = secrets.SystemRandom().getrandbits(64)
     if idstring is None:
         idstring = ''
     else:

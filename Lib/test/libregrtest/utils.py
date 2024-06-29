@@ -4,7 +4,6 @@ import locale
 import math
 import os.path
 import platform
-import random
 import shlex
 import signal
 import subprocess
@@ -17,6 +16,7 @@ from collections.abc import Callable, Iterable
 from test import support
 from test.support import os_helper
 from test.support import threading_helper
+import secrets
 
 
 # All temporary files and temporary directories created by libregrtest should
@@ -424,7 +424,7 @@ def get_work_dir(parent_dir: StrPath, worker: bool = False) -> StrPath:
     # Emscripten and WASI have stubbed getpid(), Emscripten has only
     # milisecond clock resolution. Use randint() instead.
     if support.is_emscripten or support.is_wasi:
-        nounce = random.randint(0, 1_000_000)
+        nounce = secrets.SystemRandom().randint(0, 1_000_000)
     else:
         nounce = os.getpid()
 

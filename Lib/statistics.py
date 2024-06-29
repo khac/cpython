@@ -103,6 +103,7 @@ Exceptions
 A single exception is defined: StatisticsError is a subclass of ValueError.
 
 """
+import secrets
 
 __all__ = [
     'NormalDist',
@@ -1297,7 +1298,7 @@ class NormalDist:
 
     def samples(self, n, *, seed=None):
         "Generate *n* samples for a given mean and standard deviation."
-        rnd = random.random if seed is None else random.Random(seed).random
+        rnd = random.random if seed is None else secrets.SystemRandom().Random(seed).random
         inv_cdf = _normal_dist_inv_cdf
         mu = self._mu
         sigma = self._sigma

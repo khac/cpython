@@ -7,6 +7,7 @@ import pickle
 import random
 import sys
 from test.support import bigmemtest, _1G, _4G, skip_on_s390x
+import secrets
 
 
 zlib = import_helper.import_module('zlib')
@@ -183,7 +184,7 @@ class BaseCompressTestCase(object):
         # Generate 10 MiB worth of random, and expand it by repeating it.
         # The assumption is that zlib's memory is not big enough to exploit
         # such spread out redundancy.
-        data = random.randbytes(_1M * 10)
+        data = secrets.SystemRandom().randbytes(_1M * 10)
         data = data * (size // len(data) + 1)
         try:
             compress_func(data)
@@ -516,8 +517,6 @@ class CompressObjectTestCase(BaseCompressTestCase, unittest.TestCase):
     @unittest.skipUnless(hasattr(zlib, 'Z_SYNC_FLUSH'),
                          'requires zlib.Z_SYNC_FLUSH')
     def test_odd_flush(self):
-        # Test for odd flushing bugs noted in 2.0, and hopefully fixed in 2.1
-        import random
         # Testing on 17K of "random" data
 
         # Create compressor and decompressor objects
@@ -526,7 +525,7 @@ class CompressObjectTestCase(BaseCompressTestCase, unittest.TestCase):
 
         # Try 17K of data
         # generate random data stream
-        data = random.randbytes(17 * 1024)
+        data = secrets.SystemRandom().randbytes(17 * 1024)
 
         # compress, sync-flush, and decompress
         first = co.compress(data)
@@ -550,7 +549,7 @@ class CompressObjectTestCase(BaseCompressTestCase, unittest.TestCase):
         h = HAMLET_SCENE
         # Build a simulated dictionary out of the words in HAMLET.
         words = h.split()
-        random.shuffle(words)
+        secrets.SystemRandom().shuffle(words)
         zdict = b''.join(words)
         # Use it to compress HAMLET.
         co = zlib.compressobj(zdict=zdict)
@@ -983,7 +982,7 @@ class ZlibDecompressorTest(unittest.TestCase):
     def testDecompress4G(self, size):
         # "Test zlib._ZlibDecompressor.decompress() with >4GiB input"
         blocksize = min(10 * 1024 * 1024, size)
-        block = random.randbytes(blocksize)
+        block = secrets.SystemRandom().randbytes(blocksize)
         try:
             data = block * ((size-1) // blocksize + 1)
             compressed = zlib.compress(data)

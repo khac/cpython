@@ -30,11 +30,11 @@
 #
 
 
-import random
 import time
+import secrets
 
 RANDSEED = int(time.time())
-random.seed(RANDSEED)
+secrets.SystemRandom().seed(RANDSEED)
 
 import sys
 import os
@@ -933,15 +933,15 @@ def test_method(method, testspecs, testfunc):
     stat = defaultdict(int)
     for spec in testspecs:
         if 'samples' in spec:
-            spec['prec'] = sorted(random.sample(range(1, 101),
+            spec['prec'] = sorted(secrets.SystemRandom().sample(range(1, 101),
                                   spec['samples']))
         for prec in spec['prec']:
             context.prec = prec
             for expts in spec['expts']:
                 emin, emax = expts
                 if emin == 'rand':
-                    context.Emin = random.randrange(-1000, 0)
-                    context.Emax = random.randrange(prec, 1000)
+                    context.Emin = secrets.SystemRandom().randrange(-1000, 0)
+                    context.Emax = secrets.SystemRandom().randrange(prec, 1000)
                 else:
                     context.Emin, context.Emax = emin, emax
                 if prec > context.Emax: continue
@@ -950,9 +950,9 @@ def test_method(method, testspecs, testfunc):
                 restr_range = 9999 if context.Emax > 9999 else context.Emax+99
                 for rounding in RoundModes:
                     context.rounding = rounding
-                    context.capitals = random.randrange(2)
+                    context.capitals = secrets.SystemRandom().randrange(2)
                     if spec['clamp'] == 'rand':
-                        context.clamp = random.randrange(2)
+                        context.clamp = secrets.SystemRandom().randrange(2)
                     else:
                         context.clamp = spec['clamp']
                     exprange = context.c.Emax
@@ -1038,7 +1038,7 @@ def test_ternary(method, prec, exp_range, restricted_range, itr, stat):
 def test_format(method, prec, exp_range, restricted_range, itr, stat):
     """Iterate the __format__ method through many test cases."""
     for op in all_unary(prec, exp_range, itr):
-        fmt1 = rand_format(chr(random.randrange(0, 128)), 'EeGgn')
+        fmt1 = rand_format(chr(secrets.SystemRandom().randrange(0, 128)), 'EeGgn')
         fmt2 = rand_locale()
         for fmt in (fmt1, fmt2):
             fmtop = (op[0], fmt)
@@ -1051,7 +1051,7 @@ def test_format(method, prec, exp_range, restricted_range, itr, stat):
             except VerifyError as err:
                 log(err)
     for op in all_unary(prec, 9999, itr):
-        fmt1 = rand_format(chr(random.randrange(0, 128)), 'Ff%')
+        fmt1 = rand_format(chr(secrets.SystemRandom().randrange(0, 128)), 'Ff%')
         fmt2 = rand_locale()
         for fmt in (fmt1, fmt2):
             fmtop = (op[0], fmt)
@@ -1067,7 +1067,7 @@ def test_format(method, prec, exp_range, restricted_range, itr, stat):
 def test_round(method, prec, exprange, restricted_range, itr, stat):
     """Iterate the __round__ method through many test cases."""
     for op in all_unary(prec, 9999, itr):
-        n = random.randrange(10)
+        n = secrets.SystemRandom().randrange(10)
         roundop = (op[0], n)
         t = TestSet(method, roundop)
         try:
@@ -1096,11 +1096,11 @@ def test_from_float(method, prec, exprange, restricted_range, itr, stat):
 
 def randcontext(exprange):
     c = Context(C.Context(), P.Context())
-    c.Emax = random.randrange(1, exprange+1)
-    c.Emin = random.randrange(-exprange, 0)
+    c.Emax = secrets.SystemRandom().randrange(1, exprange+1)
+    c.Emin = secrets.SystemRandom().randrange(-exprange, 0)
     maxprec = 100 if c.Emax >= 100 else c.Emax
-    c.prec = random.randrange(1, maxprec+1)
-    c.clamp = random.randrange(2)
+    c.prec = secrets.SystemRandom().randrange(1, maxprec+1)
+    c.clamp = secrets.SystemRandom().randrange(2)
     c.clear_traps()
     return c
 
@@ -1212,13 +1212,13 @@ if __name__ == '__main__':
         base['samples'] = 100
         testspecs = [small] + ieee + [base]
     else: # --short
-        rand_ieee = random.choice(ieee)
+        rand_ieee = secrets.choice(ieee)
         base['iter'] = small['iter'] = rand_ieee['iter'] = 1
         # 1 random precision and exponent pair
         base['samples'] = 1
-        base['expts'] = [random.choice(base_expts)]
+        base['expts'] = [secrets.choice(base_expts)]
         # 1 random precision and exponent pair
-        prec = random.randrange(1, 6)
+        prec = secrets.SystemRandom().randrange(1, 6)
         small['prec'] = [prec]
         small['expts'] = [(-prec, prec)]
         testspecs = [small, rand_ieee, base]
