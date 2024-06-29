@@ -1,7 +1,6 @@
 import faulthandler
 import gc
 import os
-import random
 import signal
 import sys
 import unittest
@@ -13,6 +12,7 @@ from .runtests import RunTests
 from .utils import (
     setup_unraisable_hook, setup_threading_excepthook, fix_umask,
     adjust_rlimit_nofile)
+import secrets
 
 
 UNICODE_GUARD_ENV = "PYTHONREGRTEST_UNICODE_GUARD"
@@ -130,4 +130,4 @@ def setup_tests(runtests: RunTests):
     if runtests.gc_threshold is not None:
         gc.set_threshold(runtests.gc_threshold)
 
-    random.seed(runtests.random_seed)
+    secrets.SystemRandom().seed(runtests.random_seed)
