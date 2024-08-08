@@ -6,6 +6,7 @@ import unittest
 import subprocess
 import sysconfig
 from test import support
+from security import safe_command
 
 
 SOURCE = os.path.join(os.path.dirname(__file__), 'extension.cpp')
@@ -53,9 +54,9 @@ class TestCPPExt(unittest.TestCase):
             env['CPYTHON_TEST_EXT_NAME'] = extension_name
             if support.verbose:
                 print('Run:', ' '.join(cmd))
-                subprocess.run(cmd, check=True, env=env)
+                safe_command.run(subprocess.run, cmd, check=True, env=env)
             else:
-                proc = subprocess.run(cmd,
+                proc = safe_command.run(subprocess.run, cmd,
                                       env=env,
                                       stdout=subprocess.PIPE,
                                       stderr=subprocess.STDOUT,

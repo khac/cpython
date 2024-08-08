@@ -10,6 +10,7 @@ import unittest
 from test import support
 from test.support.script_helper import assert_python_ok, assert_python_failure
 from test.support import os_helper, MS_WINDOWS
+from security import safe_command
 
 
 POSIX_LOCALES = ('C', 'POSIX')
@@ -269,7 +270,7 @@ class UTF8ModeTests(unittest.TestCase):
                 f'out.close()')
         cmd = [sys.executable, '-X', 'utf8', '-c', code]
         # The stdout TTY is inherited to the child process
-        proc = subprocess.run(cmd, text=True)
+        proc = safe_command.run(subprocess.run, cmd, text=True)
         self.assertEqual(proc.returncode, 0, proc)
 
         # In UTF-8 Mode, device_encoding(fd) returns "UTF-8" if fd is a TTY

@@ -6,6 +6,7 @@ from textwrap import dedent
 
 from test.support import os_helper, requires_resource
 from test.support.os_helper import TESTFN, TESTFN_ASCII
+from security import safe_command
 
 if sys.platform != "win32":
     raise unittest.SkipTest("windows related tests")
@@ -67,7 +68,7 @@ class TestConsoleIO(unittest.TestCase):
         # Run test in a seprated process to avoid stdin conflicts.
         # See: gh-110147
         cmd = [sys.executable, '-c', code]
-        subprocess.run(cmd, check=True, capture_output=True,
+        safe_command.run(subprocess.run, cmd, check=True, capture_output=True,
                        creationflags=subprocess.CREATE_NEW_CONSOLE)
 
     def test_kbhit(self):

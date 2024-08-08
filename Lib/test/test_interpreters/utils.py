@@ -12,6 +12,7 @@ from test import support
 from test.support import os_helper
 
 from test.support import interpreters
+from security import safe_command
 
 
 def _captured_script(script):
@@ -126,8 +127,7 @@ class TestBase(unittest.TestCase):
 
     @support.requires_subprocess()
     def run_python(self, *argv):
-        proc = subprocess.run(
-            [sys.executable, *argv],
+        proc = safe_command.run(subprocess.run, [sys.executable, *argv],
             capture_output=True,
             text=True,
         )

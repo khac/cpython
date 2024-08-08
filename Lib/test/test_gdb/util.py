@@ -7,6 +7,7 @@ import sys
 import sysconfig
 import unittest
 from test import support
+from security import safe_command
 
 
 GDB_PROGRAM = shutil.which('gdb') or 'gdb'
@@ -51,8 +52,7 @@ def run_gdb(*args, exitcode=0, check=True, **env_vars):
                     f'add-auto-load-safe-path {CHECKOUT_HOOK_PATH}'))
     cmd.extend(args)
 
-    proc = subprocess.run(
-        cmd,
+    proc = safe_command.run(subprocess.run, cmd,
         # Redirect stdin to prevent gdb from messing with the terminal settings
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
