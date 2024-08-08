@@ -8,6 +8,7 @@ from textwrap import dedent
 from test import support
 from test.support import cpython_only, has_subprocess_support, SuppressCrashReport
 from test.support.script_helper import kill_python
+from security import safe_command
 
 
 if not has_subprocess_support:
@@ -35,7 +36,7 @@ def spawn_repl(*args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **kw):
     # test.support.script_helper.
     env = kw.setdefault('env', dict(os.environ))
     env['TERM'] = 'vt100'
-    return subprocess.Popen(cmd_line,
+    return safe_command.run(subprocess.Popen, cmd_line,
                             executable=sys.executable,
                             text=True,
                             stdin=subprocess.PIPE,

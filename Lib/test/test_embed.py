@@ -15,6 +15,7 @@ import sys
 import sysconfig
 import tempfile
 import textwrap
+from security import safe_command
 
 if not support.has_subprocess_support:
     raise unittest.SkipTest("test module requires subprocess")
@@ -98,7 +99,7 @@ class EmbeddingTestsMixin:
             env = env.copy()
             env['SYSTEMROOT'] = os.environ['SYSTEMROOT']
 
-        p = subprocess.Popen(cmd,
+        p = safe_command.run(subprocess.Popen, cmd,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE,
                              universal_newlines=True,
@@ -622,7 +623,7 @@ class InitConfigTests(EmbeddingTestsMixin, unittest.TestCase):
         # Use -S to not import the site module: get the proper configuration
         # when test_embed is run from a venv (bpo-35313)
         args = [sys.executable, '-S', '-c', code]
-        proc = subprocess.run(args, env=env,
+        proc = safe_command.run(subprocess.run, args, env=env,
                               stdout=subprocess.PIPE,
                               stderr=subprocess.PIPE)
         if proc.returncode:
@@ -1705,7 +1706,7 @@ class SetConfigTests(unittest.TestCase):
         # bpo-42260: Test _PyInterpreterState_SetConfig()
         import_helper.import_module('_testcapi')
         cmd = [sys.executable, '-X', 'utf8', '-I', '-m', 'test._test_embed_set_config']
-        proc = subprocess.run(cmd,
+        proc = safe_command.run(subprocess.run, cmd,
                               stdout=subprocess.PIPE,
                               stderr=subprocess.PIPE,
                               encoding='utf-8', errors='backslashreplace')
@@ -1811,7 +1812,7 @@ class MiscTests(EmbeddingTestsMixin, unittest.TestCase):
         for flag, stmt in tests:
             xopt = f"frozen_modules={flag}"
             cmd = [sys.executable, "-I", "-X", "showrefcount", "-X", xopt, "-c", stmt]
-            proc = subprocess.run(cmd,
+            proc = safe_command.run(subprocess.run, cmd,
                                   stdout=subprocess.PIPE,
                                   stderr=subprocess.STDOUT,
                                   text=True)
@@ -1830,8 +1831,7 @@ class MiscTests(EmbeddingTestsMixin, unittest.TestCase):
                          '-X presite requires a Python debug build')
     def test_presite(self):
         cmd = [sys.executable, "-I", "-X", "presite=test.reperf", "-c", "print('cmd')"]
-        proc = subprocess.run(
-            cmd,
+        proc = safe_command.run(subprocess.run, cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,

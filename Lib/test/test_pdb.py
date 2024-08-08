@@ -18,6 +18,7 @@ from test.support import os_helper
 from test.support.import_helper import import_module
 from test.support.pty_helper import run_pty, FakeInput
 from unittest.mock import patch
+from security import safe_command
 
 # gh-114275: WASI fails to run asyncio tests, similar skip than test_asyncio.
 SKIP_ASYNCIO_TESTS = (not support.has_socket_support)
@@ -2599,8 +2600,7 @@ class PdbTestCase(unittest.TestCase):
             env = os.environ | extra_env
         else:
             env = os.environ
-        with subprocess.Popen(
-                cmd,
+        with safe_command.run(subprocess.Popen, cmd,
                 stdout=subprocess.PIPE,
                 stdin=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
@@ -2725,7 +2725,7 @@ def bœr():
         with open(os_helper.TESTFN, 'wb') as f:
             f.write(b'print("testing my pdb")\r\n')
         cmd = [sys.executable, '-m', 'pdb', os_helper.TESTFN]
-        proc = subprocess.Popen(cmd,
+        proc = safe_command.run(subprocess.Popen, cmd,
             stdout=subprocess.PIPE,
             stdin=subprocess.PIPE,
             stderr=subprocess.STDOUT,
@@ -2809,7 +2809,7 @@ def bœr():
                 t = threading.Thread(target=start_pdb)
                 t.start()""").encode('ascii'))
         cmd = [sys.executable, '-u', os_helper.TESTFN]
-        proc = subprocess.Popen(cmd,
+        proc = safe_command.run(subprocess.Popen, cmd,
             stdout=subprocess.PIPE,
             stdin=subprocess.PIPE,
             stderr=subprocess.STDOUT,
@@ -2839,7 +2839,7 @@ def bœr():
                 evt.set()
                 t.join()""").encode('ascii'))
         cmd = [sys.executable, '-u', os_helper.TESTFN]
-        proc = subprocess.Popen(cmd,
+        proc = safe_command.run(subprocess.Popen, cmd,
             stdout=subprocess.PIPE,
             stdin=subprocess.PIPE,
             stderr=subprocess.STDOUT,
@@ -2909,8 +2909,7 @@ def bœr():
                     f.write(script)
 
                 cmd = [sys.executable, 'main.py']
-                proc = subprocess.Popen(
-                    cmd,
+                proc = safe_command.run(subprocess.Popen, cmd,
                     stdout=subprocess.PIPE,
                     stdin=subprocess.PIPE,
                     stderr=subprocess.PIPE,
@@ -2955,8 +2954,7 @@ def bœr():
                 env = {'PYTHONIOENCODING': 'ascii'}
                 if sys.platform == 'win32':
                     env['PYTHONLEGACYWINDOWSSTDIO'] = 'non-empty-string'
-                proc = subprocess.Popen(
-                    cmd,
+                proc = safe_command.run(subprocess.Popen, cmd,
                     stdout=subprocess.PIPE,
                     stdin=subprocess.PIPE,
                     stderr=subprocess.PIPE,
@@ -3121,8 +3119,7 @@ def bœr():
         self.addCleanup(os_helper.unlink, filename)
         self.addCleanup(os_helper.rmtree, '__pycache__')
         cmd = [sys.executable, filename]
-        with subprocess.Popen(
-                cmd,
+        with safe_command.run(subprocess.Popen, cmd,
                 stdout=subprocess.PIPE,
                 stdin=subprocess.PIPE,
                 stderr=subprocess.STDOUT,

@@ -14,6 +14,8 @@ import tempfile
 import textwrap
 import subprocess
 import warnings
+from security import safe_command
+
 try:
     import _testinternalcapi
 except ImportError:
@@ -1835,7 +1837,7 @@ class TraceOpcodesTestCase(TraceTestCase):
         tmp.write(code.encode('utf-8'))
         tmp.close()
         try:
-            p = subprocess.Popen([sys.executable, tmp.name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            p = safe_command.run(subprocess.Popen, [sys.executable, tmp.name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             p.wait()
             out = p.stdout.read()
         finally:

@@ -17,6 +17,7 @@ from collections.abc import Callable, Iterable
 from test import support
 from test.support import os_helper
 from test.support import threading_helper
+from security import safe_command
 
 
 # All temporary files and temporary directories created by libregrtest should
@@ -617,8 +618,7 @@ def display_header(use_resources: tuple[str, ...],
         print(f"== host python: {cmd}")
 
         get_cmd = [*python_cmd, '-m', 'platform']
-        proc = subprocess.run(
-            get_cmd,
+        proc = safe_command.run(subprocess.run, get_cmd,
             stdout=subprocess.PIPE,
             text=True,
             cwd=os_helper.SAVEDCWD)
