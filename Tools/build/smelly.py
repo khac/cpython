@@ -127,7 +127,7 @@ def check_extensions():
     filename = os.path.join(config_dir, "pybuilddir.txt")
     try:
         with open(filename, encoding="utf-8") as fp:
-            pybuilddir = fp.readline()
+            pybuilddir = fp.readline(5_000_000)
     except FileNotFoundError:
         print(f"Cannot check extensions because {filename} does not exist")
         return True
