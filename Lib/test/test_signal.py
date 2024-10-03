@@ -3,7 +3,6 @@ import errno
 import functools
 import inspect
 import os
-import random
 import signal
 import socket
 import statistics
@@ -17,6 +16,8 @@ from test.support import (
     is_apple, is_apple_mobile, os_helper, threading_helper
 )
 from test.support.script_helper import assert_python_ok, spawn_python
+import secrets
+
 try:
     import _testcapi
 except ImportError:
@@ -1282,7 +1283,7 @@ class StressTest(unittest.TestCase):
             # triggering a race condition.  Ideally the signal is received
             # when inside critical signal-handling routines such as
             # Py_MakePendingCalls().
-            signal.setitimer(signal.ITIMER_REAL, 1e-6 + random.random() * 1e-5)
+            signal.setitimer(signal.ITIMER_REAL, 1e-6 + secrets.SystemRandom().random() * 1e-5)
 
         def second_handler(signum=None, frame=None):
             sigs.append(signum)
@@ -1332,7 +1333,7 @@ class StressTest(unittest.TestCase):
         while expected_sigs < N:
             # Hopefully the SIGALRM will be received somewhere during
             # initial processing of SIGUSR1.
-            signal.setitimer(signal.ITIMER_REAL, 1e-6 + random.random() * 1e-5)
+            signal.setitimer(signal.ITIMER_REAL, 1e-6 + secrets.SystemRandom().random() * 1e-5)
             os.kill(os.getpid(), signal.SIGUSR1)
 
             expected_sigs += 2

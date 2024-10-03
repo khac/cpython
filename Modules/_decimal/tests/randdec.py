@@ -46,33 +46,33 @@
 #
 
 
-from random import randrange, sample
 from fractions import Fraction
 from randfloat import un_randfloat, bin_randfloat, tern_randfloat
+import secrets
 
 
 def sign():
-    if randrange(2):
-        if randrange(2): return '+'
+    if secrets.SystemRandom().randrange(2):
+        if secrets.SystemRandom().randrange(2): return '+'
         return ''
     return '-'
 
 def indicator():
-    return "eE"[randrange(2)]
+    return "eE"[secrets.SystemRandom().randrange(2)]
 
 def digits(maxprec):
     if maxprec == 0: return ''
-    return str(randrange(10**maxprec))
+    return str(secrets.SystemRandom().randrange(10**maxprec))
 
 def dot():
-    if randrange(2): return '.'
+    if secrets.SystemRandom().randrange(2): return '.'
     return ''
 
 def decimal_part(maxprec):
-    if randrange(100) > 60: # integers
+    if secrets.SystemRandom().randrange(100) > 60: # integers
         return digits(maxprec)
-    if randrange(2):
-        intlen = randrange(1, maxprec+1)
+    if secrets.SystemRandom().randrange(2):
+        intlen = secrets.SystemRandom().randrange(1, maxprec+1)
         fraclen = maxprec-intlen
         intpart = digits(intlen)
         fracpart = digits(fraclen)
@@ -81,34 +81,34 @@ def decimal_part(maxprec):
         return ''.join((dot(), digits(maxprec)))
 
 def expdigits(maxexp):
-    return str(randrange(maxexp))
+    return str(secrets.SystemRandom().randrange(maxexp))
 
 def exponent_part(maxexp):
     return ''.join((indicator(), sign(), expdigits(maxexp)))
 
 def infinity():
-    if randrange(2): return 'Infinity'
+    if secrets.SystemRandom().randrange(2): return 'Infinity'
     return 'Inf'
 
 def nan():
     d = ''
-    if randrange(2):
-        d = digits(randrange(99))
-    if randrange(2):
+    if secrets.SystemRandom().randrange(2):
+        d = digits(secrets.SystemRandom().randrange(99))
+    if secrets.SystemRandom().randrange(2):
         return ''.join(('NaN', d))
     else:
         return ''.join(('sNaN', d))
 
 def numeric_value(maxprec, maxexp):
-    if randrange(100) > 90:
+    if secrets.SystemRandom().randrange(100) > 90:
         return infinity()
     exp_part = ''
-    if randrange(100) > 60:
+    if secrets.SystemRandom().randrange(100) > 60:
         exp_part = exponent_part(maxexp)
     return ''.join((decimal_part(maxprec), exp_part))
 
 def numeric_string(maxprec, maxexp):
-    if randrange(100) > 95:
+    if secrets.SystemRandom().randrange(100) > 95:
         return ''.join((sign(), nan()))
     else:
         return ''.join((sign(), numeric_value(maxprec, maxexp)))
@@ -120,27 +120,27 @@ def rand_adjexp(maxprec, maxadjexp):
     d = digits(maxprec)
     maxexp = maxadjexp-len(d)+1
     if maxexp == 0: maxexp = 1
-    exp = str(randrange(maxexp-2*(abs(maxexp)), maxexp))
+    exp = str(secrets.SystemRandom().randrange(maxexp-2*(abs(maxexp)), maxexp))
     return ''.join((sign(), d, 'E', exp))
 
 
 def ndigits(n):
     if n < 1: return 0
-    return randrange(10**(n-1), 10**n)
+    return secrets.SystemRandom().randrange(10**(n-1), 10**n)
 
 def randtuple(maxprec, maxexp):
-    n = randrange(100)
-    sign = randrange(2)
+    n = secrets.SystemRandom().randrange(100)
+    sign = secrets.SystemRandom().randrange(2)
     coeff = ndigits(maxprec)
     if n >= 95:
         coeff = ()
         exp = 'F'
     elif n >= 85:
         coeff = tuple(map(int, str(ndigits(maxprec))))
-        exp = "nN"[randrange(2)]
+        exp = "nN"[secrets.SystemRandom().randrange(2)]
     else:
         coeff = tuple(map(int, str(ndigits(maxprec))))
-        exp = randrange(-maxexp, maxexp)
+        exp = secrets.SystemRandom().randrange(-maxexp, maxexp)
     return (sign, coeff, exp)
 
 def from_triple(sign, coeff, exp):
@@ -152,14 +152,14 @@ def un_close_to_pow10(prec, maxexp, itr=None):
     if itr is None:
         lst = range(prec+30)
     else:
-        lst = sample(range(prec+30), itr)
+        lst = secrets.SystemRandom().sample(range(prec+30), itr)
     nines = [10**n - 1 for n in lst]
     pow10 = [10**n for n in lst]
     for coeff in nines:
         yield coeff
         yield -coeff
-        yield from_triple(1, coeff, randrange(2*maxexp))
-        yield from_triple(-1, coeff, randrange(2*maxexp))
+        yield from_triple(1, coeff, secrets.SystemRandom().randrange(2*maxexp))
+        yield from_triple(-1, coeff, secrets.SystemRandom().randrange(2*maxexp))
     for coeff in pow10:
         yield coeff
         yield -coeff
@@ -169,7 +169,7 @@ def bin_close_to_pow10(prec, maxexp, itr=None):
     if itr is None:
         lst = range(prec+30)
     else:
-        lst = sample(range(prec+30), itr)
+        lst = secrets.SystemRandom().sample(range(prec+30), itr)
     nines = [10**n - 1 for n in lst]
     pow10 = [10**n for n in lst]
     for coeff in nines:
@@ -177,10 +177,10 @@ def bin_close_to_pow10(prec, maxexp, itr=None):
         yield -coeff, -1
         yield 1, coeff
         yield -1, -coeff
-        yield from_triple(1, coeff, randrange(2*maxexp)), 1
-        yield from_triple(-1, coeff, randrange(2*maxexp)), -1
-        yield 1, from_triple(1, coeff, -randrange(2*maxexp))
-        yield -1, from_triple(-1, coeff, -randrange(2*maxexp))
+        yield from_triple(1, coeff, secrets.SystemRandom().randrange(2*maxexp)), 1
+        yield from_triple(-1, coeff, secrets.SystemRandom().randrange(2*maxexp)), -1
+        yield 1, from_triple(1, coeff, -secrets.SystemRandom().randrange(2*maxexp))
+        yield -1, from_triple(-1, coeff, -secrets.SystemRandom().randrange(2*maxexp))
     for coeff in pow10:
         yield coeff, -1
         yield -coeff, 1
@@ -190,72 +190,72 @@ def bin_close_to_pow10(prec, maxexp, itr=None):
 # Close to 1:
 def close_to_one_greater(prec, emax, emin):
     rprec = 10**prec
-    return ''.join(("1.", '0'*randrange(prec),
-                   str(randrange(rprec))))
+    return ''.join(("1.", '0'*secrets.SystemRandom().randrange(prec),
+                   str(secrets.SystemRandom().randrange(rprec))))
 
 def close_to_one_less(prec, emax, emin):
     rprec = 10**prec
-    return ''.join(("0.9", '9'*randrange(prec),
-                   str(randrange(rprec))))
+    return ''.join(("0.9", '9'*secrets.SystemRandom().randrange(prec),
+                   str(secrets.SystemRandom().randrange(rprec))))
 
 # Close to 0:
 def close_to_zero_greater(prec, emax, emin):
     rprec = 10**prec
-    return ''.join(("0.", '0'*randrange(prec),
-                   str(randrange(rprec))))
+    return ''.join(("0.", '0'*secrets.SystemRandom().randrange(prec),
+                   str(secrets.SystemRandom().randrange(rprec))))
 
 def close_to_zero_less(prec, emax, emin):
     rprec = 10**prec
-    return ''.join(("-0.", '0'*randrange(prec),
-                   str(randrange(rprec))))
+    return ''.join(("-0.", '0'*secrets.SystemRandom().randrange(prec),
+                   str(secrets.SystemRandom().randrange(rprec))))
 
 # Close to emax:
 def close_to_emax_less(prec, emax, emin):
     rprec = 10**prec
-    return ''.join(("9.", '9'*randrange(prec),
-                   str(randrange(rprec)), "E", str(emax)))
+    return ''.join(("9.", '9'*secrets.SystemRandom().randrange(prec),
+                   str(secrets.SystemRandom().randrange(rprec)), "E", str(emax)))
 
 def close_to_emax_greater(prec, emax, emin):
     rprec = 10**prec
-    return ''.join(("1.", '0'*randrange(prec),
-                   str(randrange(rprec)), "E", str(emax+1)))
+    return ''.join(("1.", '0'*secrets.SystemRandom().randrange(prec),
+                   str(secrets.SystemRandom().randrange(rprec)), "E", str(emax+1)))
 
 # Close to emin:
 def close_to_emin_greater(prec, emax, emin):
     rprec = 10**prec
-    return ''.join(("1.", '0'*randrange(prec),
-                   str(randrange(rprec)), "E", str(emin)))
+    return ''.join(("1.", '0'*secrets.SystemRandom().randrange(prec),
+                   str(secrets.SystemRandom().randrange(rprec)), "E", str(emin)))
 
 def close_to_emin_less(prec, emax, emin):
     rprec = 10**prec
-    return ''.join(("9.", '9'*randrange(prec),
-                   str(randrange(rprec)), "E", str(emin-1)))
+    return ''.join(("9.", '9'*secrets.SystemRandom().randrange(prec),
+                   str(secrets.SystemRandom().randrange(rprec)), "E", str(emin-1)))
 
 # Close to etiny:
 def close_to_etiny_greater(prec, emax, emin):
     rprec = 10**prec
     etiny = emin - (prec - 1)
-    return ''.join(("1.", '0'*randrange(prec),
-                   str(randrange(rprec)), "E", str(etiny)))
+    return ''.join(("1.", '0'*secrets.SystemRandom().randrange(prec),
+                   str(secrets.SystemRandom().randrange(rprec)), "E", str(etiny)))
 
 def close_to_etiny_less(prec, emax, emin):
     rprec = 10**prec
     etiny = emin - (prec - 1)
-    return ''.join(("9.", '9'*randrange(prec),
-                   str(randrange(rprec)), "E", str(etiny-1)))
+    return ''.join(("9.", '9'*secrets.SystemRandom().randrange(prec),
+                   str(secrets.SystemRandom().randrange(rprec)), "E", str(etiny-1)))
 
 
 def close_to_min_etiny_greater(prec, max_prec, min_emin):
     rprec = 10**prec
     etiny = min_emin - (max_prec - 1)
-    return ''.join(("1.", '0'*randrange(prec),
-                   str(randrange(rprec)), "E", str(etiny)))
+    return ''.join(("1.", '0'*secrets.SystemRandom().randrange(prec),
+                   str(secrets.SystemRandom().randrange(rprec)), "E", str(etiny)))
 
 def close_to_min_etiny_less(prec, max_prec, min_emin):
     rprec = 10**prec
     etiny = min_emin - (max_prec - 1)
-    return ''.join(("9.", '9'*randrange(prec),
-                   str(randrange(rprec)), "E", str(etiny-1)))
+    return ''.join(("9.", '9'*secrets.SystemRandom().randrange(prec),
+                   str(secrets.SystemRandom().randrange(rprec)), "E", str(etiny-1)))
 
 
 close_funcs = [
@@ -314,12 +314,12 @@ def un_incr_digits(prec, maxexp, itr):
     if itr is None:
         lst = range(prec+30)
     else:
-        lst = sample(range(prec+30), itr)
+        lst = secrets.SystemRandom().sample(range(prec+30), itr)
     for m in lst:
         yield from_triple(1, ndigits(m), 0)
         yield from_triple(-1, ndigits(m), 0)
-        yield from_triple(1, ndigits(m), randrange(maxexp))
-        yield from_triple(-1, ndigits(m), randrange(maxexp))
+        yield from_triple(1, ndigits(m), secrets.SystemRandom().randrange(maxexp))
+        yield from_triple(-1, ndigits(m), secrets.SystemRandom().randrange(maxexp))
 
 # If itr == None, test all digit lengths up to prec + 30
 # Also output decimals im tuple form.
@@ -327,17 +327,17 @@ def un_incr_digits_tuple(prec, maxexp, itr):
     if itr is None:
         lst = range(prec+30)
     else:
-        lst = sample(range(prec+30), itr)
+        lst = secrets.SystemRandom().sample(range(prec+30), itr)
     for m in lst:
         yield from_triple(1, ndigits(m), 0)
         yield from_triple(-1, ndigits(m), 0)
-        yield from_triple(1, ndigits(m), randrange(maxexp))
-        yield from_triple(-1, ndigits(m), randrange(maxexp))
+        yield from_triple(1, ndigits(m), secrets.SystemRandom().randrange(maxexp))
+        yield from_triple(-1, ndigits(m), secrets.SystemRandom().randrange(maxexp))
         # test from tuple
         yield (0, tuple(map(int, str(ndigits(m)))), 0)
         yield (1, tuple(map(int, str(ndigits(m)))), 0)
-        yield (0, tuple(map(int, str(ndigits(m)))), randrange(maxexp))
-        yield (1, tuple(map(int, str(ndigits(m)))), randrange(maxexp))
+        yield (0, tuple(map(int, str(ndigits(m)))), secrets.SystemRandom().randrange(maxexp))
+        yield (1, tuple(map(int, str(ndigits(m)))), secrets.SystemRandom().randrange(maxexp))
 
 # If itr == None, test all combinations of digit lengths up to prec + 30
 def bin_incr_digits(prec, maxexp, itr):
@@ -345,16 +345,16 @@ def bin_incr_digits(prec, maxexp, itr):
         lst1 = range(prec+30)
         lst2 = range(prec+30)
     else:
-        lst1 = sample(range(prec+30), itr)
-        lst2 = sample(range(prec+30), itr)
+        lst1 = secrets.SystemRandom().sample(range(prec+30), itr)
+        lst2 = secrets.SystemRandom().sample(range(prec+30), itr)
     for m in lst1:
         x = from_triple(1, ndigits(m), 0)
         yield x, x
         x = from_triple(-1, ndigits(m), 0)
         yield x, x
-        x = from_triple(1, ndigits(m), randrange(maxexp))
+        x = from_triple(1, ndigits(m), secrets.SystemRandom().randrange(maxexp))
         yield x, x
-        x = from_triple(-1, ndigits(m), randrange(maxexp))
+        x = from_triple(-1, ndigits(m), secrets.SystemRandom().randrange(maxexp))
         yield x, x
     for m in lst1:
         for n in lst2:
@@ -370,22 +370,22 @@ def bin_incr_digits(prec, maxexp, itr):
             x = from_triple(-1, ndigits(m), 0)
             y = from_triple(-1, ndigits(n), 0)
             yield x, y
-            x = from_triple(1, ndigits(m), randrange(maxexp))
-            y = from_triple(1, ndigits(n), randrange(maxexp))
+            x = from_triple(1, ndigits(m), secrets.SystemRandom().randrange(maxexp))
+            y = from_triple(1, ndigits(n), secrets.SystemRandom().randrange(maxexp))
             yield x, y
-            x = from_triple(-1, ndigits(m), randrange(maxexp))
-            y = from_triple(1, ndigits(n), randrange(maxexp))
+            x = from_triple(-1, ndigits(m), secrets.SystemRandom().randrange(maxexp))
+            y = from_triple(1, ndigits(n), secrets.SystemRandom().randrange(maxexp))
             yield x, y
-            x = from_triple(1, ndigits(m), randrange(maxexp))
-            y = from_triple(-1, ndigits(n), randrange(maxexp))
+            x = from_triple(1, ndigits(m), secrets.SystemRandom().randrange(maxexp))
+            y = from_triple(-1, ndigits(n), secrets.SystemRandom().randrange(maxexp))
             yield x, y
-            x = from_triple(-1, ndigits(m), randrange(maxexp))
-            y = from_triple(-1, ndigits(n), randrange(maxexp))
+            x = from_triple(-1, ndigits(m), secrets.SystemRandom().randrange(maxexp))
+            y = from_triple(-1, ndigits(n), secrets.SystemRandom().randrange(maxexp))
             yield x, y
 
 
 def randsign():
-    return (1, -1)[randrange(2)]
+    return (1, -1)[secrets.SystemRandom().randrange(2)]
 
 # If itr == None, test all combinations of digit lengths up to prec + 30
 def tern_incr_digits(prec, maxexp, itr):
@@ -394,9 +394,9 @@ def tern_incr_digits(prec, maxexp, itr):
         lst2 = range(prec+30)
         lst3 = range(prec+30)
     else:
-        lst1 = sample(range(prec+30), itr)
-        lst2 = sample(range(prec+30), itr)
-        lst3 = sample(range(prec+30), itr)
+        lst1 = secrets.SystemRandom().sample(range(prec+30), itr)
+        lst2 = secrets.SystemRandom().sample(range(prec+30), itr)
+        lst3 = secrets.SystemRandom().sample(range(prec+30), itr)
     for m in lst1:
         for n in lst2:
             for p in lst3:
@@ -410,14 +410,14 @@ def tern_incr_digits(prec, maxexp, itr):
 def bindigits(prec):
     z = 0
     for i in range(prec):
-        z += randrange(2) * 10**i
+        z += secrets.SystemRandom().randrange(2) * 10**i
     return z
 
 def logical_un_incr_digits(prec, itr):
     if itr is None:
         lst = range(prec+30)
     else:
-        lst = sample(range(prec+30), itr)
+        lst = secrets.SystemRandom().sample(range(prec+30), itr)
     for m in lst:
         yield from_triple(1, bindigits(m), 0)
 
@@ -426,8 +426,8 @@ def logical_bin_incr_digits(prec, itr):
         lst1 = range(prec+30)
         lst2 = range(prec+30)
     else:
-        lst1 = sample(range(prec+30), itr)
-        lst2 = sample(range(prec+30), itr)
+        lst1 = secrets.SystemRandom().sample(range(prec+30), itr)
+        lst2 = secrets.SystemRandom().sample(range(prec+30), itr)
     for m in lst1:
         x = from_triple(1, bindigits(m), 0)
         yield x, x
@@ -439,11 +439,11 @@ def logical_bin_incr_digits(prec, itr):
 
 
 def randint():
-    p = randrange(1, 100)
-    return ndigits(p) * (1,-1)[randrange(2)]
+    p = secrets.SystemRandom().randrange(1, 100)
+    return ndigits(p) * (1,-1)[secrets.SystemRandom().randrange(2)]
 
 def randfloat():
-    p = randrange(1, 100)
+    p = secrets.SystemRandom().randrange(1, 100)
     s = numeric_value(p, 383)
     try:
         f = float(numeric_value(p, 383))
@@ -453,7 +453,7 @@ def randfloat():
 
 def randcomplex():
     real = randfloat()
-    if randrange(100) > 30:
+    if secrets.SystemRandom().randrange(100) > 30:
         imag = 0.0
     else:
         imag = randfloat()

@@ -1,7 +1,7 @@
 import multiprocessing
 import time
-import random
 import sys
+import secrets
 
 #
 # Functions used by test code
@@ -18,11 +18,11 @@ def calculatestar(args):
     return calculate(*args)
 
 def mul(a, b):
-    time.sleep(0.5 * random.random())
+    time.sleep(0.5 * secrets.SystemRandom().random())
     return a * b
 
 def plus(a, b):
-    time.sleep(0.5 * random.random())
+    time.sleep(0.5 * secrets.SystemRandom().random())
     return a + b
 
 def f(x):
