@@ -25,7 +25,6 @@ import errno
 import locale
 import os
 import pickle
-import random
 import signal
 import sys
 import textwrap
@@ -47,6 +46,7 @@ from test.support.os_helper import FakePath
 import codecs
 import io  # C implementation of io
 import _pyio as pyio # Python implementation of io
+import secrets
 
 try:
     import ctypes
@@ -1550,7 +1550,7 @@ class BufferedReaderTest(unittest.TestCase, CommonBufferedTests):
             # doesn't duplicate or forget contents.
             N = 1000
             l = list(range(256)) * N
-            random.shuffle(l)
+            secrets.SystemRandom().shuffle(l)
             s = bytes(bytearray(l))
             with self.open(os_helper.TESTFN, "wb") as f:
                 f.write(s)

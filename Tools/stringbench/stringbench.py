@@ -9,6 +9,7 @@ import re
 import sys
 import datetime
 import optparse
+import secrets
 
 VERSION = '2.0'
 
@@ -867,8 +868,7 @@ def newlines_splitlines(STR):
 ## split text with 2000 newlines
 
 def _make_2000_lines():
-    import random
-    r = random.Random(100)
+    r = secrets.SystemRandom().Random(100)
     chars = list(map(chr, range(32, 128)))
     i = 0
     while i < len(chars):

@@ -10,6 +10,7 @@ from test.test_grammar import (VALID_UNDERSCORE_LITERALS,
                                INVALID_UNDERSCORE_LITERALS)
 from test.support import os_helper
 from test.support.script_helper import run_test_script, make_script, run_python_until_end
+import secrets
 
 # Converts a source string into a list of textual representation
 # of the tokens such as:
@@ -1907,7 +1908,7 @@ class TestRoundtrip(TestCase):
         # Test roundtrip on random python modules.
         # pass the '-ucpu' option to process the full directory.
 
-        import glob, random
+        import glob
         tempdir = os.path.dirname(__file__) or os.curdir
         testfiles = glob.glob(os.path.join(glob.escape(tempdir), "test*.py"))
 
@@ -1915,7 +1916,7 @@ class TestRoundtrip(TestCase):
         testfiles.remove(os.path.join(tempdir, "test_fstring.py"))
 
         if not support.is_resource_enabled("cpu"):
-            testfiles = random.sample(testfiles, 10)
+            testfiles = secrets.SystemRandom().sample(testfiles, 10)
 
         for testfile in testfiles:
             if support.verbose >= 2:

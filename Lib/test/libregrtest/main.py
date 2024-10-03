@@ -1,5 +1,4 @@
 import os
-import random
 import re
 import shlex
 import sys
@@ -26,6 +25,7 @@ from .utils import (
     display_header, cleanup_temp_dir, print_warning,
     is_cross_compiled, get_host_runner,
     EXIT_TIMEOUT)
+import secrets
 
 
 class Regrtest:
@@ -133,7 +133,7 @@ class Regrtest:
             # https://reproducible-builds.org/docs/source-date-epoch/
             self.random_seed: int | str = os.environ['SOURCE_DATE_EPOCH']
         elif ns.random_seed is None:
-            self.random_seed = random.getrandbits(32)
+            self.random_seed = secrets.SystemRandom().getrandbits(32)
         else:
             self.random_seed = ns.random_seed
 
@@ -217,9 +217,9 @@ class Regrtest:
                 print(f"Cannot find starting test: {self.starting_test}")
                 sys.exit(1)
 
-        random.seed(self.random_seed)
+        secrets.SystemRandom().seed(self.random_seed)
         if self.randomize:
-            random.shuffle(selected)
+            secrets.SystemRandom().shuffle(selected)
 
         return (tuple(selected), tests)
 

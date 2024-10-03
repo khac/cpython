@@ -29,10 +29,11 @@
 # Generate PEP-3101 format strings.
 
 
-import os, sys, locale, random
+import os, sys, locale
 import platform, subprocess
 from test.support.import_helper import import_fresh_module
 from shutil import which
+import secrets
 
 C = import_fresh_module('decimal', fresh=['_decimal'])
 P = import_fresh_module('decimal', blocked=['_decimal'])
@@ -229,36 +230,36 @@ def all_fillchars():
 # Return random fill character.
 def rand_fillchar():
     while 1:
-        i = random.randrange(0, 0x110002)
+        i = secrets.SystemRandom().randrange(0, 0x110002)
         c = check_fillchar(i)
         if c: return c
 
 # Generate random format strings
 # [[fill]align][sign][#][0][width][.precision][type]
 def rand_format(fill, typespec='EeGgFfn%'):
-    active = sorted(random.sample(range(7), random.randrange(8)))
+    active = sorted(secrets.SystemRandom().sample(range(7), secrets.SystemRandom().randrange(8)))
     have_align = 0
     s = ''
     for elem in active:
         if elem == 0: # fill+align
             s += fill
-            s += random.choice('<>=^')
+            s += secrets.choice('<>=^')
             have_align = 1
         elif elem == 1: # sign
-            s += random.choice('+- ')
+            s += secrets.choice('+- ')
         elif elem == 2 and not have_align: # zeropad
             s += '0'
         elif elem == 3: # width
-            s += str(random.randrange(1, 100))
+            s += str(secrets.SystemRandom().randrange(1, 100))
         elif elem == 4: # thousands separator
             s += ','
         elif elem == 5: # prec
             s += '.'
-            s += str(random.randrange(100))
+            s += str(secrets.SystemRandom().randrange(100))
         elif elem == 6:
             if 4 in active: c = typespec.replace('n', '')
             else: c = typespec
-            s += random.choice(c)
+            s += secrets.choice(c)
     return s
 
 # Partially brute force all possible format strings containing a thousands
@@ -274,7 +275,7 @@ def all_format_sep():
                     for width in ['']+[str(y) for y in range(1, 15)]+['101']:
                         for prec in ['']+['.'+str(y) for y in range(15)]:
                             # for type in ('', 'E', 'e', 'G', 'g', 'F', 'f', '%'):
-                            type = random.choice(('', 'E', 'e', 'G', 'g', 'F', 'f', '%'))
+                            type = secrets.choice(('', 'E', 'e', 'G', 'g', 'F', 'f', '%'))
                             yield ''.join((fill, align, sign, zeropad, width, ',', prec, type))
 
 # Partially brute force all possible format strings with an 'n' specifier.
@@ -293,50 +294,50 @@ def all_format_loc():
 # Generate random format strings with a unicode fill character
 # [[fill]align][sign][#][0][width][,][.precision][type]
 def randfill(fill):
-    active = sorted(random.sample(range(5), random.randrange(6)))
+    active = sorted(secrets.SystemRandom().sample(range(5), secrets.SystemRandom().randrange(6)))
     s = ''
     s += str(fill)
-    s += random.choice('<>=^')
+    s += secrets.choice('<>=^')
     for elem in active:
         if elem == 0: # sign
-            s += random.choice('+- ')
+            s += secrets.choice('+- ')
         elif elem == 1: # width
-            s += str(random.randrange(1, 100))
+            s += str(secrets.SystemRandom().randrange(1, 100))
         elif elem == 2: # thousands separator
             s += ','
         elif elem == 3: # prec
             s += '.'
-            s += str(random.randrange(100))
+            s += str(secrets.SystemRandom().randrange(100))
         elif elem == 4:
             if 2 in active: c = 'EeGgFf%'
             else: c = 'EeGgFfn%'
-            s += random.choice(c)
+            s += secrets.choice(c)
     return s
 
 # Generate random format strings with random locale setting
 # [[fill]align][sign][#][0][width][,][.precision][type]
 def rand_locale():
     try:
-        loc = random.choice(locale_list)
+        loc = secrets.choice(locale_list)
         locale.setlocale(locale.LC_ALL, loc)
     except locale.Error as err:
         pass
-    active = sorted(random.sample(range(5), random.randrange(6)))
+    active = sorted(secrets.SystemRandom().sample(range(5), secrets.SystemRandom().randrange(6)))
     s = ''
     have_align = 0
     for elem in active:
         if elem == 0: # fill+align
-            s += chr(random.randrange(32, 128))
-            s += random.choice('<>=^')
+            s += chr(secrets.SystemRandom().randrange(32, 128))
+            s += secrets.choice('<>=^')
             have_align = 1
         elif elem == 1: # sign
-            s += random.choice('+- ')
+            s += secrets.choice('+- ')
         elif elem == 2 and not have_align: # zeropad
             s += '0'
         elif elem == 3: # width
-            s += str(random.randrange(1, 100))
+            s += str(secrets.SystemRandom().randrange(1, 100))
         elif elem == 4: # prec
             s += '.'
-            s += str(random.randrange(100))
+            s += str(secrets.SystemRandom().randrange(100))
     s += 'n'
     return s
