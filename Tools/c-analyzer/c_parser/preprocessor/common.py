@@ -13,6 +13,7 @@ from .errors import (
     MissingDependenciesError,
     OSMismatchError,
 )
+from security import safe_command
 
 
 logger = logging.getLogger(__name__)
@@ -46,7 +47,7 @@ def run_cmd(argv, *,
     env = dict(os.environ)
     env.pop('LANG', None)
 
-    proc = subprocess.run(argv, env=env, **kwargs)
+    proc = safe_command.run(subprocess.run, argv, env=env, **kwargs)
     return proc.stdout
 
 

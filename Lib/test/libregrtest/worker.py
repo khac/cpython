@@ -12,6 +12,7 @@ from .single import run_single_test
 from .utils import (
     StrPath, StrJSON, TestFilter,
     get_temp_dir, get_work_dir, exit_timeout)
+from security import safe_command
 
 
 USE_PROCESS_GROUP = (hasattr(os, "setsid") and hasattr(os, "killpg"))
@@ -69,7 +70,7 @@ def create_worker_process(runtests: WorkerRunTests, output_fd: int,
     json_file.configure_subprocess(kwargs)
 
     with json_file.inherit_subprocess():
-        return subprocess.Popen(cmd, **kwargs)
+        return safe_command.run(subprocess.Popen, cmd, **kwargs)
 
 
 def worker_process(worker_json: StrJSON) -> NoReturn:

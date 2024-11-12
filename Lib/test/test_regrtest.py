@@ -30,6 +30,7 @@ from test.libregrtest import utils
 from test.libregrtest.filter import set_match_tests, match_test
 from test.libregrtest.result import TestStats
 from test.libregrtest.utils import normalize_test_name
+from security import safe_command
 
 if not support.has_subprocess_support:
     raise unittest.SkipTest("test module requires subprocess")
@@ -698,7 +699,7 @@ class BaseTestCase(unittest.TestCase):
             env = dict(os.environ)
             env.pop('SOURCE_DATE_EPOCH', None)
 
-        proc = subprocess.run(args,
+        proc = safe_command.run(subprocess.run, args,
                               text=True,
                               input=input,
                               stdout=subprocess.PIPE,
@@ -2103,7 +2104,7 @@ class ArgsTestCase(BaseTestCase):
                "-m", "test", option,
                f'--testdir={self.tmptestdir}',
                testname]
-        proc = subprocess.run(cmd,
+        proc = safe_command.run(subprocess.run, cmd,
                               stdout=subprocess.PIPE,
                               stderr=subprocess.STDOUT,
                               text=True)

@@ -5,6 +5,7 @@ import shutil
 import subprocess
 import sysconfig
 from test import support
+from security import safe_command
 
 
 def get_python_source_dir():
@@ -32,8 +33,7 @@ def _run_quiet(cmd, *, cwd=None):
         print('+', 'cd', cwd, flush=True)
     print('+', shlex.join(cmd), flush=True)
     try:
-        return subprocess.run(
-            cmd,
+        return safe_command.run(subprocess.run, cmd,
             cwd=cwd,
             capture_output=True,
             text=True,

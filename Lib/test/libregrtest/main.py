@@ -26,6 +26,7 @@ from .utils import (
     display_header, cleanup_temp_dir, print_warning,
     is_cross_compiled, get_host_runner,
     EXIT_TIMEOUT)
+from security import safe_command
 
 
 class Regrtest:
@@ -591,7 +592,7 @@ class Regrtest:
                 # On error, it raises an OSError.
             else:
                 import subprocess
-                with subprocess.Popen(cmd, env=environ) as proc:
+                with safe_command.run(subprocess.Popen, cmd, env=environ) as proc:
                     try:
                         proc.wait()
                     except KeyboardInterrupt:
