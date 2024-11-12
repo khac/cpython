@@ -9,13 +9,14 @@ from contextlib import ExitStack
 from errno import EIO
 
 from test.support.import_helper import import_module
+from security import safe_command
 
 def run_pty(script, input=b"dummy input\r", env=None):
     pty = import_module('pty')
     output = bytearray()
     [master, slave] = pty.openpty()
     args = (sys.executable, '-c', script)
-    proc = subprocess.Popen(args, stdin=slave, stdout=slave, stderr=slave, env=env)
+    proc = safe_command.run(subprocess.Popen, args, stdin=slave, stdout=slave, stderr=slave, env=env)
     os.close(slave)
     with ExitStack() as cleanup:
         cleanup.enter_context(proc)

@@ -32,6 +32,7 @@
 
 import random
 import time
+from security import safe_command
 
 RANDSEED = int(time.time())
 random.seed(RANDSEED)
@@ -1297,7 +1298,7 @@ if __name__ == '__main__':
                     return
 
                 cmd = [sys.executable, "deccheck.py", "--%s" % args.time, "--single", test]
-                p = subprocess.Popen(cmd, stdout=PIPE, stderr=STDOUT)
+                p = safe_command.run(subprocess.Popen, cmd, stdout=PIPE, stderr=STDOUT)
                 out, _ = p.communicate()
                 write_output(out, p.returncode)
 

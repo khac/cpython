@@ -9,6 +9,7 @@ import sysconfig
 
 import reindent
 import untabify
+from security import safe_command
 
 
 def get_python_source_dir():
@@ -135,7 +136,7 @@ def changed_files(base_branch=None):
         else:
             cmd = 'git status --porcelain'
         filenames = []
-        with subprocess.Popen(cmd.split(),
+        with safe_command.run(subprocess.Popen, cmd.split(),
                               stdout=subprocess.PIPE,
                               cwd=SRCDIR) as st:
             git_file_status, _ = st.communicate()

@@ -23,6 +23,7 @@ import os.path
 import io
 import re
 import csv
+from security import safe_command
 
 SCRIPT_NAME = 'Tools/build/stable_abi.py'
 MISSING = object()
@@ -465,7 +466,7 @@ def binutils_get_exported_symbols(library, dynamic=False):
     if dynamic:
         args.append("--dynamic")
     args.append(library)
-    proc = subprocess.run(args, stdout=subprocess.PIPE, universal_newlines=True)
+    proc = safe_command.run(subprocess.run, args, stdout=subprocess.PIPE, universal_newlines=True)
     if proc.returncode:
         sys.stdout.write(proc.stdout)
         sys.exit(proc.returncode)

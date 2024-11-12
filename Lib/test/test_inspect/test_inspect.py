@@ -25,6 +25,7 @@ import unicodedata
 import unittest
 import unittest.mock
 import warnings
+from security import safe_command
 
 
 try:
@@ -5073,7 +5074,7 @@ class TestRepl(unittest.TestCase):
         # test.support.script_helper.
         env = kw.setdefault('env', dict(os.environ))
         env['TERM'] = 'vt100'
-        return subprocess.Popen(cmd_line,
+        return safe_command.run(subprocess.Popen, cmd_line,
                                 executable=sys.executable,
                                 text=True,
                                 stdin=subprocess.PIPE,

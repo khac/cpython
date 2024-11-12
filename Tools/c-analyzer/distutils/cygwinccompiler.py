@@ -53,6 +53,7 @@ from distutils.unixccompiler import UnixCCompiler
 from distutils.errors import CCompilerError
 from distutils.version import LooseVersion
 from distutils.spawn import find_executable
+from security import safe_command
 
 def get_msvcr():
     """Include the appropriate MSVC runtime library if Python was built
@@ -259,7 +260,7 @@ def _find_exe_version(cmd):
     executable = cmd.split()[0]
     if find_executable(executable) is None:
         return None
-    out = Popen(cmd, shell=True, stdout=PIPE).stdout
+    out = safe_command.run(Popen, cmd, shell=True, stdout=PIPE).stdout
     try:
         out_string = out.read()
     finally:

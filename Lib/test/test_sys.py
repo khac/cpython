@@ -16,6 +16,8 @@ from test.support import os_helper
 from test.support.script_helper import assert_python_ok, assert_python_failure
 from test.support import threading_helper
 from test.support import import_helper
+from security import safe_command
+
 try:
     from test.support import interpreters
 except ImportError:
@@ -800,20 +802,20 @@ class SysModuleTest(unittest.TestCase):
         # not representable in ASCII.
 
         env["PYTHONIOENCODING"] = "cp424"
-        p = subprocess.Popen([sys.executable, "-c", 'print(chr(0xa2))'],
+        p = safe_command.run(subprocess.Popen, [sys.executable, "-c", 'print(chr(0xa2))'],
                              stdout = subprocess.PIPE, env=env)
         out = p.communicate()[0].strip()
         expected = ("\xa2" + os.linesep).encode("cp424")
         self.assertEqual(out, expected)
 
         env["PYTHONIOENCODING"] = "ascii:replace"
-        p = subprocess.Popen([sys.executable, "-c", 'print(chr(0xa2))'],
+        p = safe_command.run(subprocess.Popen, [sys.executable, "-c", 'print(chr(0xa2))'],
                              stdout = subprocess.PIPE, env=env)
         out = p.communicate()[0].strip()
         self.assertEqual(out, b'?')
 
         env["PYTHONIOENCODING"] = "ascii"
-        p = subprocess.Popen([sys.executable, "-c", 'print(chr(0xa2))'],
+        p = safe_command.run(subprocess.Popen, [sys.executable, "-c", 'print(chr(0xa2))'],
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                              env=env)
         out, err = p.communicate()
@@ -822,7 +824,7 @@ class SysModuleTest(unittest.TestCase):
         self.assertIn(rb"'\xa2'", err)
 
         env["PYTHONIOENCODING"] = "ascii:"
-        p = subprocess.Popen([sys.executable, "-c", 'print(chr(0xa2))'],
+        p = safe_command.run(subprocess.Popen, [sys.executable, "-c", 'print(chr(0xa2))'],
                              stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                              env=env)
         out, err = p.communicate()
@@ -831,7 +833,7 @@ class SysModuleTest(unittest.TestCase):
         self.assertIn(rb"'\xa2'", err)
 
         env["PYTHONIOENCODING"] = ":surrogateescape"
-        p = subprocess.Popen([sys.executable, "-c", 'print(chr(0xdcbd))'],
+        p = safe_command.run(subprocess.Popen, [sys.executable, "-c", 'print(chr(0xdcbd))'],
                              stdout=subprocess.PIPE, env=env)
         out = p.communicate()[0].strip()
         self.assertEqual(out, b'\xbd')
@@ -845,7 +847,7 @@ class SysModuleTest(unittest.TestCase):
         env = dict(os.environ)
 
         env["PYTHONIOENCODING"] = ""
-        p = subprocess.Popen([sys.executable, "-c",
+        p = safe_command.run(subprocess.Popen, [sys.executable, "-c",
                                 'print(%a)' % os_helper.FS_NONASCII],
                                 stdout=subprocess.PIPE, env=env)
         out = p.communicate()[0].strip()
@@ -909,7 +911,7 @@ class SysModuleTest(unittest.TestCase):
             env['PYTHONIOENCODING'] = encoding
         else:
             env.pop('PYTHONIOENCODING', None)
-        p = subprocess.Popen(args,
+        p = safe_command.run(subprocess.Popen, args,
                               stdout=subprocess.PIPE,
                               stderr=subprocess.STDOUT,
                               env=env,
@@ -1120,7 +1122,7 @@ class SysModuleTest(unittest.TestCase):
             f2()
         """
         def check(tracebacklimit, expected):
-            p = subprocess.Popen([sys.executable, '-c', code % tracebacklimit],
+            p = safe_command.run(subprocess.Popen, [sys.executable, '-c', code % tracebacklimit],
                                  stderr=subprocess.PIPE)
             out = p.communicate()[1]
             self.assertEqual(out.splitlines(), expected)
@@ -1169,7 +1171,7 @@ class SysModuleTest(unittest.TestCase):
             print(sys.orig_argv)
         ''')
         args = [sys.executable, '-I', '-X', 'utf8', '-c', code, 'arg']
-        proc = subprocess.run(args, check=True, capture_output=True, text=True)
+        proc = safe_command.run(subprocess.run, args, check=True, capture_output=True, text=True)
         expected = [
             repr(['-c', 'arg']),  # sys.argv
             repr(args),  # sys.orig_argv

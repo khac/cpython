@@ -51,6 +51,7 @@ from typing import (
     Tuple,
     Union,
 )
+from security import safe_command
 
 logger = logging.getLogger("wasm_build")
 
@@ -609,7 +610,7 @@ class BuildProfile:
             "--port",
             str(port),
         ]
-        srv = subprocess.Popen(args, cwd=SRCDIR)
+        srv = safe_command.run(subprocess.Popen, args, cwd=SRCDIR)
         # wait for server
         end = time.monotonic() + 3.0
         while time.monotonic() < end and srv.returncode is None:

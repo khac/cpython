@@ -2,6 +2,7 @@ import os
 import shutil
 import subprocess
 import sys
+from security import safe_command
 
 # find_library(name) returns the pathname of a library, or None.
 if os.name == "nt":
@@ -124,7 +125,7 @@ elif os.name == "posix":
             env['LC_ALL'] = 'C'
             env['LANG'] = 'C'
             try:
-                proc = subprocess.Popen(args,
+                proc = safe_command.run(subprocess.Popen, args,
                                         stdout=subprocess.PIPE,
                                         stderr=subprocess.STDOUT,
                                         env=env)
@@ -159,7 +160,7 @@ elif os.name == "posix":
                 return None
 
             try:
-                proc = subprocess.Popen(("/usr/ccs/bin/dump", "-Lpv", f),
+                proc = safe_command.run(subprocess.Popen, ("/usr/ccs/bin/dump", "-Lpv", f),
                                         stdout=subprocess.PIPE,
                                         stderr=subprocess.DEVNULL)
             except OSError:  # E.g. command not found
@@ -181,7 +182,7 @@ elif os.name == "posix":
                 return None
 
             try:
-                proc = subprocess.Popen((objdump, '-p', '-j', '.dynamic', f),
+                proc = safe_command.run(subprocess.Popen, (objdump, '-p', '-j', '.dynamic', f),
                                         stdout=subprocess.PIPE,
                                         stderr=subprocess.DEVNULL)
             except OSError:  # E.g. bad executable
@@ -212,7 +213,7 @@ elif os.name == "posix":
             expr = os.fsencode(expr)
 
             try:
-                proc = subprocess.Popen(('/sbin/ldconfig', '-r'),
+                proc = safe_command.run(subprocess.Popen, ('/sbin/ldconfig', '-r'),
                                         stdout=subprocess.PIPE,
                                         stderr=subprocess.DEVNULL)
             except OSError:  # E.g. command not found
@@ -243,7 +244,7 @@ elif os.name == "posix":
 
             paths = None
             try:
-                proc = subprocess.Popen(args,
+                proc = safe_command.run(subprocess.Popen, args,
                                         stdout=subprocess.PIPE,
                                         stderr=subprocess.DEVNULL,
                                         env=env)
@@ -311,7 +312,7 @@ elif os.name == "posix":
             cmd.extend(['-o', os.devnull, '-l%s' % name])
             result = None
             try:
-                p = subprocess.Popen(cmd, stdout=subprocess.PIPE,
+                p = safe_command.run(subprocess.Popen, cmd, stdout=subprocess.PIPE,
                                      stderr=subprocess.PIPE,
                                      universal_newlines=True)
                 out, _ = p.communicate()
