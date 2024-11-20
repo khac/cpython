@@ -15,7 +15,7 @@ def getmakevars(filename):
     pendingline = ""
     try:
         while 1:
-            line = fp.readline()
+            line = fp.readline(5_000_000)
             if pendingline:
                 line = pendingline + line
                 pendingline = ""
@@ -52,7 +52,7 @@ def getsetupinfo(filename):
     pendingline = ""
     try:
         while 1:
-            line = fp.readline()
+            line = fp.readline(5_000_000)
             if pendingline:
                 line = pendingline + line
                 pendingline = ""

@@ -159,7 +159,7 @@ if os.path.isfile("/etc/locale.alias"):
     with open("/etc/locale.alias") as f:
         while 1:
             try:
-                line = f.readline()
+                line = f.readline(5_000_000)
             except UnicodeDecodeError:
                 continue
             if line == "":

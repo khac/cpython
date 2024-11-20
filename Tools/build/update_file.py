@@ -29,7 +29,7 @@ def updating_file_with_tmpfile(filename, tmpfile=None):
         tmpfile = os.path.join(tmpfile, filename + '.tmp')
 
     with open(filename, 'rb') as infile:
-        line = infile.readline()
+        line = infile.readline(5_000_000)
 
     if line.endswith(b'\r\n'):
         newline = "\r\n"
