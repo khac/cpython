@@ -11,7 +11,6 @@ import io
 import locale
 import os.path
 import platform
-import random
 import re
 import shlex
 import signal
@@ -30,6 +29,7 @@ from test.libregrtest import utils
 from test.libregrtest.filter import set_match_tests, match_test
 from test.libregrtest.result import TestStats
 from test.libregrtest.utils import normalize_test_name
+import secrets
 
 if not support.has_subprocess_support:
     raise unittest.SkipTest("test module requires subprocess")
@@ -1997,11 +1997,11 @@ class ArgsTestCase(BaseTestCase):
         cmd.extend(tests)
         output = self.run_tests(*cmd)
 
-        random.seed(random_seed)
+        secrets.SystemRandom().seed(random_seed)
         # Make the assumption that nothing consume entropy between libregrest
         # setup_tests() which calls random.seed() and RandomSeedTest calling
         # random.randint().
-        numbers = [random.randint(0, 1000) for _ in range(10)]
+        numbers = [secrets.SystemRandom().randint(0, 1000) for _ in range(10)]
         expected = f"Random numbers: {numbers}"
 
         regex = r'^Random numbers: .*$'

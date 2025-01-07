@@ -17,7 +17,6 @@ import functools
 import signal
 import array
 import socket
-import random
 import logging
 import subprocess
 import struct
@@ -36,6 +35,7 @@ from test.support import script_helper
 from test.support import socket_helper
 from test.support import threading_helper
 from test.support import warnings_helper
+import secrets
 
 
 # Skip tests if _multiprocessing wasn't built.
@@ -3808,11 +3808,11 @@ class _TestHeap(BaseTestCase):
 
         # create and destroy lots of blocks of different sizes
         for i in range(iterations):
-            size = int(random.lognormvariate(0, 1) * 1000)
+            size = int(secrets.SystemRandom().lognormvariate(0, 1) * 1000)
             b = multiprocessing.heap.BufferWrapper(size)
             blocks.append(b)
             if len(blocks) > maxblocks:
-                i = random.randrange(maxblocks)
+                i = secrets.SystemRandom().randrange(maxblocks)
                 del blocks[i]
             del b
 
@@ -3851,7 +3851,7 @@ class _TestHeap(BaseTestCase):
                     self.assertEqual(stop, nstart)
 
         # test free'ing all blocks
-        random.shuffle(blocks)
+        secrets.SystemRandom().shuffle(blocks)
         while blocks:
             blocks.pop()
 
@@ -4592,7 +4592,7 @@ class _TestFinalize(BaseTestCase):
             def __init__(self):
                 self.ref = self  # create reference cycle
                 # insert finalizer at random key
-                util.Finalize(self, cb, exitpriority=random.randint(1, 100))
+                util.Finalize(self, cb, exitpriority=secrets.SystemRandom().randint(1, 100))
 
         finish = False
         exc = None
@@ -4600,7 +4600,7 @@ class _TestFinalize(BaseTestCase):
         def run_finalizers():
             nonlocal exc
             while not finish:
-                time.sleep(random.random() * 1e-1)
+                time.sleep(secrets.SystemRandom().random() * 1e-1)
                 try:
                     # A GC run will eventually happen during this,
                     # collecting stale Foo's and mutating the registry
@@ -4615,7 +4615,7 @@ class _TestFinalize(BaseTestCase):
                 try:
                     # Old Foo's get gradually replaced and later
                     # collected by the GC (because of the cyclic ref)
-                    d[random.getrandbits(5)] = {Foo() for i in range(10)}
+                    d[secrets.SystemRandom().getrandbits(5)] = {Foo() for i in range(10)}
                 except Exception as e:
                     exc = e
                     d.clear()
@@ -5006,7 +5006,7 @@ class TestWait(unittest.TestCase):
     def _child_test_wait(cls, w, slow):
         for i in range(10):
             if slow:
-                time.sleep(random.random() * 0.100)
+                time.sleep(secrets.SystemRandom().random() * 0.100)
             w.send((i, os.getpid()))
         w.close()
 
@@ -5046,7 +5046,7 @@ class TestWait(unittest.TestCase):
         s.connect(address)
         for i in range(10):
             if slow:
-                time.sleep(random.random() * 0.100)
+                time.sleep(secrets.SystemRandom().random() * 0.100)
             s.sendall(('%s\n' % i).encode('ascii'))
         s.close()
 

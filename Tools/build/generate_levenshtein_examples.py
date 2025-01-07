@@ -4,7 +4,7 @@ import argparse
 from functools import lru_cache
 import json
 import os.path
-from random import choices, randrange
+import secrets
 
 
 # This should be in sync with Lib/traceback.py.  It's not importing those values
@@ -53,13 +53,13 @@ def main():
     # Create a lot of non-empty examples, which should end up with a Gauss-like
     # distribution for even costs (moves) and odd costs (case substitutions).
     while len(examples) < 9990:
-        a = ''.join(choices("abcABC", k=randrange(1, 10)))
-        b = ''.join(choices("abcABC", k=randrange(1, 10)))
+        a = ''.join(secrets.SystemRandom().choices("abcABC", k=secrets.SystemRandom().randrange(1, 10)))
+        b = ''.join(secrets.SystemRandom().choices("abcABC", k=secrets.SystemRandom().randrange(1, 10)))
         expected = levenshtein(a, b)
         examples.add((a, b, expected))
     # Create one empty case each for strings between 0 and 9 in length.
     for i in range(10):
-        b = ''.join(choices("abcABC", k=i))
+        b = ''.join(secrets.SystemRandom().choices("abcABC", k=i))
         expected = levenshtein("", b)
         examples.add(("", b, expected))
     with open(output_path, "w") as f:

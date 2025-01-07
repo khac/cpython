@@ -6,11 +6,11 @@ import dataclasses
 import io
 import itertools
 import pprint
-import random
 import re
 import test.support
 import types
 import unittest
+import secrets
 
 # list, tuple and dict subclasses that do or don't overwrite __repr__
 class list2(list):
@@ -752,7 +752,7 @@ frozenset2({0,
         # Issue 3976:  sorted pprints fail for unorderable values.
         n = 20
         keys = [Unorderable() for i in range(n)]
-        random.shuffle(keys)
+        secrets.SystemRandom().shuffle(keys)
         skeys = sorted(keys, key=id)
         clean = lambda s: s.replace(' ', '').replace('\n','')
 

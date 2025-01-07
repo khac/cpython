@@ -5,7 +5,6 @@ import gc
 import locale
 import operator
 import os
-import random
 import struct
 import subprocess
 import sys
@@ -16,6 +15,8 @@ from test.support import os_helper
 from test.support.script_helper import assert_python_ok, assert_python_failure
 from test.support import threading_helper
 from test.support import import_helper
+import secrets
+
 try:
     from test.support import interpreters
 except ImportError:
@@ -698,7 +699,7 @@ class SysModuleTest(unittest.TestCase):
         if has_is_interned:
             self.assertRaises(TypeError, sys._is_interned)
             self.assertRaises(TypeError, sys._is_interned, b'abc')
-        s = "never interned before" + str(random.randrange(0, 10**9))
+        s = "never interned before" + str(secrets.SystemRandom().randrange(0, 10**9))
         self.assertTrue(sys.intern(s) is s)
         if has_is_interned:
             self.assertIs(sys._is_interned(s), True)
@@ -724,7 +725,7 @@ class SysModuleTest(unittest.TestCase):
 
     @requires_subinterpreters
     def test_subinterp_intern_dynamically_allocated(self):
-        s = "never interned before" + str(random.randrange(0, 10**9))
+        s = "never interned before" + str(secrets.SystemRandom().randrange(0, 10**9))
         t = sys.intern(s)
         self.assertIs(t, s)
 
