@@ -3,16 +3,16 @@
 # Determine threshold for switching from longobject.c divmod to
 # _pylong.int_divmod().
 
-from random import randrange
 from time import perf_counter as now
 from _pylong import int_divmod as divmod_fast
+import secrets
 
 BITS_PER_DIGIT = 30
 
 
 def rand_digits(n):
     top = 1 << (n * BITS_PER_DIGIT)
-    return randrange(top >> 1, top)
+    return secrets.SystemRandom().randrange(top >> 1, top)
 
 
 def probe_den(nd):
