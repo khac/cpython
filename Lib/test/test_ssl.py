@@ -29,6 +29,8 @@ import weakref
 import platform
 import sysconfig
 import functools
+import ssl
+
 try:
     import ctypes
 except ImportError:
@@ -919,7 +921,7 @@ class ContextTests(unittest.TestCase):
                     ctx = ssl.SSLContext(protocol)
                 self.assertEqual(ctx.protocol, protocol)
         with warnings_helper.check_warnings():
-            ctx = ssl.SSLContext()
+            ctx = ssl.SSLContext(protocol=ssl.PROTOCOL_TLS_CLIENT)
         self.assertEqual(ctx.protocol, ssl.PROTOCOL_TLS)
         self.assertRaises(ValueError, ssl.SSLContext, -1)
         self.assertRaises(ValueError, ssl.SSLContext, 42)
@@ -999,7 +1001,7 @@ class ContextTests(unittest.TestCase):
 
     def test_verify_mode_protocol(self):
         with warnings_helper.check_warnings():
-            ctx = ssl.SSLContext(ssl.PROTOCOL_TLS)
+            ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
         # Default value
         self.assertEqual(ctx.verify_mode, ssl.CERT_NONE)
         ctx.verify_mode = ssl.CERT_OPTIONAL
@@ -1101,7 +1103,7 @@ class ContextTests(unittest.TestCase):
             ctx.minimum_version = 42
 
         if has_tls_protocol(ssl.PROTOCOL_TLSv1_1):
-            ctx = ssl.SSLContext(ssl.PROTOCOL_TLSv1_1)
+            ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
 
             self.assertIn(
                 ctx.minimum_version, minimum_range
@@ -1545,7 +1547,7 @@ class ContextTests(unittest.TestCase):
 
     def test_check_hostname(self):
         with warnings_helper.check_warnings():
-            ctx = ssl.SSLContext(ssl.PROTOCOL_TLS)
+            ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
         self.assertFalse(ctx.check_hostname)
         self.assertEqual(ctx.verify_mode, ssl.CERT_NONE)
 
